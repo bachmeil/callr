@@ -110,15 +110,15 @@ struct RData(T) {
   this(this) {
     enforce(x !is null, "x should never be null inside an RData struct. Are you sure you called the constructor?");
     refcount += 1;
-    writeln("Refcount for ", name, " is ", refcount);
+    //~ writeln("Refcount for ", name, " is ", refcount);
   }
 	
   ~this() {
     enforce(x !is null, "Calling the destructor on an RData struct when x is null. Did you call the constructor?");
       refcount -= 1;
-      writeln("Refcount for ", name, " is ", refcount);
+      //~ writeln("Refcount for ", name, " is ", refcount);
       if (refcount == 0) {
-        writeln("Letting R destroy ", name);
+        //~ writeln("Letting R destroy ", name);
         evalRQ(`rm(` ~ name ~ `)`);
     }
   }

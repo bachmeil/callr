@@ -1,5 +1,6 @@
 import std.stdio;
 import embedr.r;
+import callr.lm;
 
 void main() {
   startR();
@@ -15,5 +16,14 @@ void main() {
   printR(fit.data);
   writeln(fit.names);
   writeln(RVector(fit["coefficients"])[0..2]);
+  auto lhs = rvec("rnorm(100)");
+  auto rhs = rvec("rnorm(100)");
+  auto lm = LM!RVector(lhs, rhs);
+  LMFit lmfit = lm.ols();
+  lmfit.coefficients.print("Estimated Coefficients");
+  lmfit.residuals.print("Residuals");
+  lm.intercept = false;
+  LMFit lmfit2 = lm.ols();
+  lmfit2.coefficients.print("New set of coefficients");
   closeR();
 }
