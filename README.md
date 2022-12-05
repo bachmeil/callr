@@ -45,7 +45,7 @@ void main() {
 It's compiled with the command
 
 ```
-ldmd2 test.d r.d -version=standalone -L/usr/lib/R/library/RInside/lib/libRInside.so -L/usr/lib/libR.so
+ldmd2 test.d r.d lm.d -version=standalone -L/usr/lib/R/library/RInside/lib/libRInside.so -L/usr/lib/libR.so
 ```
 
 Explanations of some lines:

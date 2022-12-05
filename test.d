@@ -25,5 +25,6 @@ void main() {
   lm.intercept = false;
   LMFit lmfit2 = lm.ols();
   lmfit2.coefficients.print("New set of coefficients");
+  writeln("DF: ", lmfit2.dfResidual);
   closeR();
 }

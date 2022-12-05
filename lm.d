@@ -29,12 +29,16 @@ struct LMFit {
   RVector residuals;
   RVector effects;
   RVector fittedValues;
+  int rank;
+  int dfResidual;
   
   this(RData!RList fit) {
     coefficients = RVector(fit["coefficients"]);
     residuals = RVector(fit["residuals"]);
     effects = RVector(fit["effects"]);
     fittedValues = RVector(fit["fitted.values"]);
+    rank = fit["rank"].scalar!int;
+    dfResidual = fit["df.residual"].scalar!int;
   }
 }
     
