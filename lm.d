@@ -1,27 +1,30 @@
 module callr.lm;
 
+import std.sumtype;
 import embedr.r;
-alias rvec = RData!RVector;
-alias rlist = RData!RList;
 
-struct LM(T) {
-  RData!RVector y;
-  RData!T x;
+alias r_vec = RData!RVector;
+alias r_mat = RData!RMatrix;
+alias r_list = RData!RList;
+alias r_array = RData!RArrayInsideR;
+
+struct LMStruct(T) {
+  r_vec y;
+  T x;
   bool intercept = true;
-  
-  this(RData!RVector _y, RData!T _x) {
-    y = _y;
-    x = _x;
-  } 
 
   LMFit ols() {
     string intTerm = "";
     if (!intercept) {
       intTerm = " -1";
     }
-    auto fit = RData!RList(`lm(` ~ y.name ~ ` ~ ` ~ x.name ~ intTerm ~ `)`);
+    auto fit = r_list(`lm(` ~ y.name ~ ` ~ ` ~ x.name ~ intTerm ~ `)`);
     return LMFit(fit);
   }
+}
+
+LMStruct!T LM(T)(r_vec y, T x) {
+  return LMStruct!T(y, x);
 }
 
 struct LMFit {
@@ -32,7 +35,7 @@ struct LMFit {
   int rank;
   int dfResidual;
   
-  this(RData!RList fit) {
+  this(r_list fit) {
     coefficients = RVector(fit["coefficients"]);
     residuals = RVector(fit["residuals"]);
     effects = RVector(fit["effects"]);

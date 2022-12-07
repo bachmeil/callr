@@ -18,7 +18,7 @@ void main() {
   writeln(RVector(fit["coefficients"])[0..2]);
   auto lhs = rvec("rnorm(100)");
   auto rhs = rvec("rnorm(100)");
-  auto lm = LM!RVector(lhs, rhs);
+  auto lm = LM(lhs, rhs);
   LMFit lmfit = lm.ols();
   lmfit.coefficients.print("Estimated Coefficients");
   lmfit.residuals.print("Residuals");

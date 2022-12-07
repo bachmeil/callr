@@ -1,7 +1,7 @@
 module embedr.r;
 
 import std.algorithm, std.array, std.conv, std.datetime, std.math;
-import std.meta, std.range, std.stdio, std.string;
+import std.meta, std.range, std.stdio, std.string, std.sumtype;
 import std.traits, std.utf;
 
 version(gretl) {
@@ -65,27 +65,19 @@ struct ProtectedRObject {
   }
 }
 
+/* I possibly don't have sufficient understanding of the D language.
+ * I'm okay with specifying the type *here*. However, I don't want to
+ * have to specify the type *everywhere else*, for instance, when I'm
+ * calling the constructor for LM. sumtypes don't have implicit, so they
+ * don't help me. If I use a template, the user has to do LM!RVector or
+ * some such ugly thing just to pass in different data types. I don't
+ * know how to get the compiler to infer something it should. */
 struct RData(T) {
   string name;
   Robj x;
   int refcount;
-  static if(is(T == RVector)) {
-    T obj;
-    alias obj this;
-  }
-  static if(is(T == RMatrix)) {
-    R obj;
-    alias obj this;
-  }
-  static if(is(T == RList)) {
-    T obj;
-    alias obj this;
-  }
-  static if(is(T == RArrayInsideR)) {
-    T obj;
-    alias obj this;
-  }
-
+  T obj;
+  alias obj this;
   
   this(string code) {
     import std.datetime;
