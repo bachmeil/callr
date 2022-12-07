@@ -138,3 +138,30 @@ Won't this be terribly slow?
 The first answer is that you're doing this for the functionality it provides, not for speed. This probably won't be as fast as an optimized pure D program. It opens the door to the type of interactive data analysis you do in R. The nice features of D, including static types, will make that process run smoother.
 
 The second answer is that there's not a lot going on. You're creating some structs and passing pointers between R and D. That's pretty cheap in the grand scheme of things. Now, if you're doing this on the inside of a loop that's running 10 billion times, you'll definitely pay a price. For the typical kinds of things you'll need this for, such as using an R package to do a long-running Bayesian simulation, the overhead will be so small that you can act as if it's zero. So while you can find cases where speed is a problem, it's probably not going to be your bottleneck. Keep in mind that R can sometimes be slow *if the program is written exclusively in R*. Many R packages are nothing but convenient interfaces for C, C++, and Fortran libraries. You spend a few milliseconds running a few characters of R code, then everything is passed off to a fast library.
+
+# Design
+
+This might change in the future; it describes the current (December 2022) design.
+
+The current design involves four "low level" types that do the work to interoperate with R. The hope is that they will be easy to use, but that specialized higher-level wrappers will be written to provide commonly-used functionality. For example, OLS is a popular tool for estimating linear forecasting models. The low level types are `RData!RVector` and `RData!RMatrix` to hold the data and the output. A high level wrapper will contain RVector and RMatrix elements that can then be accessed to get the coefficients, residuals, degrees of freedom, etc.
+
+The four low level types are:
+
+- `RData!RVector`
+- `RData!RMatrix`
+- `RData!RList`
+- `RData!RArray`
+
+Others, such as S3 and S4 classes, can easily be added in the future.
+
+
+
+
+
+
+
+
+
+
+
+
