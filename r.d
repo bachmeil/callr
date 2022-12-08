@@ -95,22 +95,24 @@ struct RData(T) {
       obj = RList(x, false);
     }
     static if(is(T == RArrayInsideR)) {
-      obj = RArrayInsideR(x, false);
+      obj = RArrayInsideR(x);
     }
   }
   
   this(this) {
     enforce(x !is null, "x should never be null inside an RData struct. Are you sure you called the constructor?");
     refcount += 1;
-    //~ writeln("Refcount for ", name, " is ", refcount);
+    writeln("Refcount for ", name, " is ", refcount);
   }
 	
   ~this() {
+    writeln("destructing ", name);
     enforce(x !is null, "Calling the destructor on an RData struct when x is null. Did you call the constructor?");
+    writeln("destructing more ", name);
       refcount -= 1;
-      //~ writeln("Refcount for ", name, " is ", refcount);
+      writeln("Refcount for ", name, " is ", refcount);
       if (refcount == 0) {
-        //~ writeln("Letting R destroy ", name);
+        writeln("Letting R destroy ", name);
         evalRQ(`rm(` ~ name ~ `)`);
     }
   }
@@ -1028,6 +1030,88 @@ struct RVector {
 
   Robj robj() {
     return data.robj;
+  }
+}
+
+struct RVector2 {
+  int rows;
+  double * ptr;
+  
+  this(Robj rv) {
+    enforce(isVector(rv), "In RVector constructor: Cannot convert non-vector R object to RVector");
+    enforce(isNumeric(rv), "In RVector constructor: Cannot convert non-numeric R object to RVector");
+    rows = rv.length;
+    ptr = REAL(rv);
+  }
+  
+  version(standalone) {
+    this(string name) {
+      this(evalR(name));
+    }
+  }	
+  
+  double opIndex(int r) {
+    enforce(r < rows, "Index out of range: index on RVector is too large");
+    return ptr[r];
+  }
+  
+  void opIndexAssign(double v, int r) {
+    enforce(r < rows, "Index out of range: index on RVector is too large");
+    ptr[r] = v;
+  }
+
+  void opAssign(T)(T x) {
+    enforce(x.length == rows, "Cannot assign to RVector from an object of a different length");
+    foreach(ii; 0..to!int(x.length)) {
+      this[ii] = x[ii];
+    }
+  }
+  
+  void opAssign(RVector2 x) {
+    this.rows = x.rows;
+    this.ptr = x.ptr;
+  }
+  
+  RVector2 opSlice(int i, int j) {
+    enforce(j <= rows, "Index out of range: index on RVector slice is too large. index=" ~ to!string(j) ~ " # rows=" ~ to!string(rows));
+    enforce(i < j, "First index has to be less than second index");
+    RVector2 result = this;
+    result.rows = j-i;
+    result.ptr = &ptr[i];
+    return result;
+  }
+
+  void print(string msg="") {
+    if (msg != "") { writeln(msg, ":"); }
+    foreach(val; this) {
+      writeln(val);
+    }
+  }
+
+  int length() {
+    return rows;
+  }
+	
+  bool empty() {
+    return rows == 0;
+  }
+
+  double front() {
+    return this[0];
+  }
+
+  void popFront() {
+    ptr = &ptr[1];
+    rows -= 1;
+  }
+
+  double[] array() {
+    double[] result;
+    result.reserve(rows);
+    foreach(val; this) {
+      result ~= val;
+    }
+    return result;
   }
 }
 
