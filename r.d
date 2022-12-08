@@ -61,7 +61,7 @@ struct ProtectedRObject {
         enforce(data !is null, "Calling the destructor on a ProtectedRObject when data is null. You must have created an ProtectedRObject without using the constructor.");
         data.refcount -= 1;
         if (data.refcount == 0) {
-          writeln("unprotecting");
+          //~ writeln("unprotecting");
           Rf_unprotect_ptr(data.ptr);
         }
       }
@@ -1043,6 +1043,8 @@ struct RVector {
   }
 }
 
+/* I added this only when I was debugging issues in RVector. Don't use it.
+ * It might be different from RVector. */
 struct RVector2 {
   int rows;
   double * ptr;

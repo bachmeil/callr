@@ -16,20 +16,8 @@ struct LM {
   LMSummary summary;
   
   this(T1, T2)(T1 _y, T2 _x) {
-    writeln(_y.name);
-    writeln(_x.name);
     y = _y.name;
-    writeln(y);
-    writeln("here 1");
     x = _x.name;
-    writeln("here 2");
-    writeln(x);
-    writeln("intercept: ", intercept);
-    writeln(y);
-    writeln(x);
-    writeln("this ", this);
-    ols();
-    writeln("df ", summary.fstat);
   }
 
   void ols() {
@@ -37,15 +25,10 @@ struct LM {
     if (!intercept) {
       intTerm = " -1";
     }
-    writeln("here");
     auto rawFit = r_list(`lm(` ~ y ~ ` ~ ` ~ x ~ intTerm ~ `)`);
-    writeln("rawFit names ", rawFit.names);
     fit = LMFit(rawFit);
-    //~ writeln("coefs ", fit.coefficients);
-    writeln("rank ", fit.rank);
     auto rawSummary = r_list(`summary(` ~ rawFit.name ~ `)`);
     summary = LMSummary(rawSummary);
-    writeln("Finishing OLS");
   }
 }
 

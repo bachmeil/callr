@@ -20,15 +20,15 @@ void main() {
   // Generate some data
   auto lhs = r_vec("rnorm(100)");
   auto rhs = r_vec("rnorm(100)");
-  writeln("lhs name ", lhs.name);
+  //~ writeln("lhs name ", lhs.name);
   // Create an LM struct and do OLS
   auto lm = LM(lhs, rhs);
-  writeln("lhs name ", lhs.name);
-  writeln("rhs name ", rhs.name);
+  //~ writeln("lhs name ", lhs.name);
+  //~ writeln("rhs name ", rhs.name);
   writeln(lm.y);
   lm.ols();
   lm.fit.coefficients.print("Estimated Coefficients");
-  lm.fit.residuals.print("Residuals");
+  //~ lm.fit.residuals.print("Residuals");
   
   lm.intercept = false;
   lm.ols();
