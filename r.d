@@ -44,19 +44,29 @@ struct ProtectedRObject {
   }
 	
   this(this) {
-    if (data.unprotect) {
-      enforce(data !is null, "data should never be null inside an ProtectedRObject. You must have created an ProtectedRObject without using the constructor.");
-      data.refcount += 1;
+    if (data !is null) {
+      if (data.unprotect) {
+        enforce(data !is null, "data should never be null inside an ProtectedRObject. You must have created an ProtectedRObject without using the constructor.");
+        data.refcount += 1;
+      }
     }
   }
-	
+  
+  /* I don't entirely understand this. Sometimes data is null if unprotect is
+   * false. Maybe the compiler knows unprotect is false so it'll never
+   * need to execute this part of the code? */
   ~this() {
-    if (data.unprotect) {
-      enforce(data !is null, "Calling the destructor on an ProtectedRObject when data is null. You must have created an ProtectedRObject without using the constructor.");
-      data.refcount -= 1;
-      if (data.refcount == 0) {
-	Rf_unprotect_ptr(data.ptr);
+    if (data !is null) {
+      if (data.unprotect) {
+        enforce(data !is null, "Calling the destructor on a ProtectedRObject when data is null. You must have created an ProtectedRObject without using the constructor.");
+        data.refcount -= 1;
+        if (data.refcount == 0) {
+          writeln("unprotecting");
+          Rf_unprotect_ptr(data.ptr);
+        }
       }
+    } else {
+      writeln(&this, " data is null");
     }
   }
 	
@@ -102,17 +112,17 @@ struct RData(T) {
   this(this) {
     enforce(x !is null, "x should never be null inside an RData struct. Are you sure you called the constructor?");
     refcount += 1;
-    writeln("Refcount for ", name, " is ", refcount);
+    //~ writeln("Refcount for ", name, " is ", refcount);
   }
 	
   ~this() {
-    writeln("destructing ", name);
+    //~ writeln("destructing ", name);
     enforce(x !is null, "Calling the destructor on an RData struct when x is null. Did you call the constructor?");
-    writeln("destructing more ", name);
+    //~ writeln("destructing more ", name);
       refcount -= 1;
-      writeln("Refcount for ", name, " is ", refcount);
+      //~ writeln("Refcount for ", name, " is ", refcount);
       if (refcount == 0) {
-        writeln("Letting R destroy ", name);
+        //~ writeln("Letting R destroy ", name);
         evalRQ(`rm(` ~ name ~ `)`);
     }
   }

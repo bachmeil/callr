@@ -27,9 +27,9 @@ struct LM {
     writeln("intercept: ", intercept);
     writeln(y);
     writeln(x);
-    //~ writeln("this ", this);
+    writeln("this ", this);
     ols();
-    //~ writeln("df ", summary.fstat);
+    writeln("df ", summary.fstat);
   }
 
   void ols() {
@@ -50,18 +50,18 @@ struct LM {
 }
 
 struct LMFit {
-  RVector2 coefficients;
-  RVector2 residuals;
-  RVector2 effects;
-  RVector2 fittedValues;
+  RVector coefficients;
+  RVector residuals;
+  RVector effects;
+  RVector fittedValues;
   int rank;
   int dfResidual;
   
   this(r_list fit) {
-    coefficients = RVector2(fit["coefficients"]);
-    residuals = RVector2(fit["residuals"]);
-    effects = RVector2(fit["effects"]);
-    fittedValues = RVector2(fit["fitted.values"]);
+    coefficients = RVector(fit["coefficients"]);
+    residuals = RVector(fit["residuals"]);
+    effects = RVector(fit["effects"]);
+    fittedValues = RVector(fit["fitted.values"]);
     rank = fit["rank"].scalar!int;
     dfResidual = fit["df.residual"].scalar!int;
   }
@@ -71,14 +71,14 @@ struct LMSummary {
   double sigma;
   double rsq;
   double adjrsq;
-  //~ RVector fstat;
-  //~ RMatrix covUnscaled;
+  RVector fstat;
+  RMatrix covUnscaled;
   
   this(r_list fit) {
     sigma = fit["sigma"].scalar;
     rsq = fit["r.squared"].scalar;
     adjrsq = fit["adj.r.squared"].scalar;
-    //~ fstat = RVector(fit["fstatistic"]);
-    //~ covUnscaled = RMatrix(fit["cov.unscaled"]);
+    fstat = RVector(fit["fstatistic"]);
+    covUnscaled = RMatrix(fit["cov.unscaled"]);
   }
 }
